@@ -13,11 +13,9 @@ public class Screen extends BaseModel{
 
     private String name;
 
-    @OneToMany
+    @OneToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
     private List<Seat> seats;
 
-
-    @Enumerated(EnumType.ORDINAL)
-    @ElementCollection
-    private List<ScreenFeatures> screenFeatures;
+    @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    private Movie movie;
 }

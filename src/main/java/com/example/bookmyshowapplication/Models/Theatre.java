@@ -1,9 +1,8 @@
 package com.example.bookmyshowapplication.Models;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -16,9 +15,10 @@ public class Theatre extends BaseModel{
 
     private String name;
 
-    @ManyToOne
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JsonBackReference
     private Region region;
 
-    @OneToMany
+    @OneToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
     private List<Screen> screens;
 }

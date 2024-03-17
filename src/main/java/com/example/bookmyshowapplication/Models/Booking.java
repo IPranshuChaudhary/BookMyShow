@@ -11,23 +11,20 @@ import java.util.List;
 @Getter
 @Setter
 @Entity
-@Component
 public class Booking extends BaseModel{
 
     //SameShow seat could be in cancelled state in one booking
     //while in booked state in another booking
     //so MtoM
-    @ManyToMany
-    private List<ShowSeat> seats;
-
-    @ManyToOne
-    private Show show;
-
-    @OneToMany
-    private List<Payment> payments;
 
     @Enumerated(EnumType.ORDINAL)
     private BookingStatus bookingStatus;
+
+    @OneToMany
+    private List<Seat> seat;
+
+    @ManyToOne
+    private Screen screen;
 
     @ManyToOne
     private User user;

@@ -3,8 +3,6 @@ package com.example.bookmyshowapplication.Services;
 import com.example.bookmyshowapplication.Models.LoginStatus;
 import com.example.bookmyshowapplication.Models.User;
 import com.example.bookmyshowapplication.Repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -13,8 +11,12 @@ import java.util.Optional;
 
 @Service
 public class UserService {
-    @Autowired
+
     private UserRepository userRepository;
+    UserService(UserRepository userRepository){
+        this.userRepository = userRepository;
+    }
+
     public User signUp(String email, String password){
         User user;
         Optional<User> optionalUser = userRepository.findByEmail(email);
