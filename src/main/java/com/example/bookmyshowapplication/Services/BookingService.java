@@ -1,5 +1,6 @@
 package com.example.bookmyshowapplication.Services;
 
+import com.example.bookmyshowapplication.Config.RestTemplateConfig;
 import com.example.bookmyshowapplication.Exceptions.InvalidShowException;
 import com.example.bookmyshowapplication.Exceptions.InvalidUserException;
 import com.example.bookmyshowapplication.Exceptions.SeatNotAvailableException;
@@ -10,9 +11,12 @@ import com.example.bookmyshowapplication.Repository.SeatRepository;
 import com.example.bookmyshowapplication.Repository.UserRepository;
 
 import com.example.bookmyshowapplication.Utils.PriceCalculator;
+import com.example.bookmyshowapplication.dtos.UserServiceDto;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -28,18 +32,24 @@ public class BookingService {
     private ScreenRepository screenRepository;
     private SeatRepository seatRepository;
     private BookingRepository bookingRepository;
+    private RestTemplate restTemplate;
+
+    @Value("${Auth_Server}")
+    private String userServiceUrl;
 
 
     BookingService(UserRepository userRepository,
                    ScreenRepository screenRepository,
                    SeatRepository seatRepository,
-                   BookingRepository bookingRepository
+                   BookingRepository bookingRepository,
+                   RestTemplate restTemplate
                    ){
 
         this.userRepository = userRepository;
         this.screenRepository = screenRepository;
         this.seatRepository = seatRepository;
         this.bookingRepository = bookingRepository;
+        this.restTemplate = restTemplate;
     }
     public Booking makeABooking(Long userId, Long screenId, List<Long> seatIds)
             throws InvalidUserException, InvalidShowException,
@@ -56,13 +66,24 @@ public class BookingService {
         //8. return booing object
 
         //1. get user
-        Optional<User> optionalUser = userRepository.findById(userId);
+        System.out.println(userServiceUrl);
+        UserServiceDto userServiceDto = restTemplate.getForObject(userServiceUrl+"/users/"+userId, UserServiceDto.class);
 
-
-        if (optionalUser.isEmpty()){
+        if (userServiceDto == null){
             throw new InvalidUserException();
         }
-        User user = optionalUser.get();
+
+        Optional<User> optionalUser = userRepository.findByEmail(userServiceDto.getEmail());
+
+        User user;
+        if (optionalUser.isPresent()){
+            user = optionalUser.get();
+        }else{
+            user = new User();
+            user.setName(userServiceDto.getName());
+            user.setEmail(userServiceDto.getEmail());
+            userRepository.save(user);
+        }
 
         //2. get screen
         Optional<Screen> optionalScreen = screenRepository.findById(screenId);
@@ -111,9 +132,10 @@ public class BookingService {
         booking.setScreen(screen);
         booking.setUser(user);
 
-        booking = bookingRepository.save(booking);
+        Booking booking1 = bookingRepository.save(booking);
+        System.out.println(booking1.getId());
 
-        return booking;
+        return booking1;
     }
 
     public Booking updateBookingStatus(String id, String status){

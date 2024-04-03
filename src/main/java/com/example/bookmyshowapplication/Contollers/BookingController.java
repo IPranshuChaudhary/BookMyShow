@@ -47,9 +47,13 @@ public class BookingController {
             bookMovieResponseDto.setBookingId(booking.getId());
             bookMovieResponseDto.setAmount(booking.getPrice());
             bookMovieResponseDto.setResponseStatus(ResponseStatus.SUCCESS);
-        } catch (Exception e) {
 
+
+        } catch (Exception e) {
             bookMovieResponseDto.setResponseStatus(ResponseStatus.FAILURE);
+
+            throw new RuntimeException(e);
+
         }
 
         return bookMovieResponseDto;

@@ -1,9 +1,5 @@
 package com.example.bookmyshowapplication.dtos;
 
-import com.example.bookmyshowapplication.Models.BookingStatus;
-import com.example.bookmyshowapplication.Models.Screen;
-import com.example.bookmyshowapplication.Models.Seat;
-import com.example.bookmyshowapplication.Models.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;

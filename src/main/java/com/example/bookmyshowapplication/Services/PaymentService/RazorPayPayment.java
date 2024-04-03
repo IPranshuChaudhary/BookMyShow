@@ -9,6 +9,7 @@ import com.razorpay.PaymentLink;
 import com.razorpay.RazorpayException;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +22,9 @@ public class RazorPayPayment implements PaymentService{
     private RazorPayConfig razorPayConfig;
     private BookingRepository bookingRepository;
     private UserRepository userRepository;
+
+    @Value("${redirect_url}")
+    private String callBackUrl;
 
     RazorPayPayment(RazorPayConfig razorPayConfig, BookingRepository bookingRepository,
                     UserRepository userRepository){
@@ -64,7 +68,7 @@ public class RazorPayPayment implements PaymentService{
         JSONObject notes = new JSONObject();
         notes.put("policy_name", "Jeevan Bima");
         paymentLinkRequest.put("notes", notes);
-        paymentLinkRequest.put("callback_url", "http://localhost:8080/bms/success");
+        paymentLinkRequest.put("callback_url", callBackUrl+"/bms/success");
         paymentLinkRequest.put("callback_method", "get");
 
         PaymentLink payment = razorPayConfig.getRazorPayClient().paymentLink.create(paymentLinkRequest);
